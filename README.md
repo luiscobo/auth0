@@ -65,6 +65,12 @@ const loginProcess = async () => {
    * ```authClient.isAuthenticated()```: if we want to know if the user is logged in or not.
    * ```authClient.getTokenSilently()```: Fetches a new access token
    * ```authClient.getUser()```: Returns the user information if available
+   
+   For example, if you want to get a new JWT Access Token, you can doit in the following way
+   
+   ```javascript
+   const token = await authClient.getTokenSilently();
+   ```
 
 6. In order to start the log-out process, it is necessary to call the ```authClient.logout()``` method
    passing a valid ```return-to``` URL.
