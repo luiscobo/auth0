@@ -71,6 +71,17 @@ const loginProcess = async () => {
    ```javascript
    const token = await authClient.getTokenSilently();
    ```
+   
+   In order to obtain additional information about the logged user, that information is stored in the 
+   user object. For example, this code demonstrate the way to print the information:
+   
+   ```javascript
+  //logged in. you can get the user profile like this:
+  const user = await authClient.getUser();
+  console.log("First Name: " + user.given_name);
+  console.log("Family Name: " + user.family_name);
+  console.log("Telephone: " + user.phone_number);
+   ```
 
 6. In order to start the log-out process, it is necessary to call the ```authClient.logout()``` method
    passing a valid ```return-to``` URL.
