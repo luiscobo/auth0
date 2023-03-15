@@ -17,11 +17,11 @@ final class ObapremiosAuthorization
      *
      * @var string the client ID
      */
-    private string $client_id = "8dDhsS9O4LXsMRQ1LvRRYF9HUVutTEFG";
+    private string $client_id = "";
 
-    private string $client_secret = "MRP0-ZPju4p0P6WjJA0gsoEG1OMGla8BMGCCYrgiPFdQAnlGMY74dsic7Ka0J0IW";
+    private string $client_secret = "";
 
-    private string $cookie_secret = "1fb6e74453c8af30e8e5b77c5913bc886ee35ab55fc98044137134471547f90c";
+    private string $cookie_secret = "";
 
     private string $route_url_callback = "https://obapremios.com";
 
