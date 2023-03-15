@@ -71,6 +71,24 @@ final class ObapremiosAuthorization
     }
 
     /**
+     * @param string $newClientId
+     * @return void
+     */
+    public function setClientId(string $newClientId): void
+    {
+        $this->client_id = $newClientId;
+    }
+
+    /**
+     * @param string $newClientSecret
+     * @return void
+     */
+    public function setClientSecret(string $newClientSecret): void
+    {
+        $this->client_secret = $newClientSecret;
+    }
+
+    /**
      * @param string $route_url_callback
      */
     public function setRouteUrlCallback(string $route_url_callback): void
@@ -146,6 +164,7 @@ final class ObapremiosAuthorization
      * Redirect to the Login Page
      *
      * @return void
+     * @throws ConfigurationException
      */
     #[NoReturn] public function login(): void
     {
@@ -153,7 +172,7 @@ final class ObapremiosAuthorization
         $this->sdk->clear();
 
         // Redirect to Auth0's Universal Login page.
-        $this->redirect($this->route_url_callback);
+        $this->redirect($this->sdk->login($this->route_url_callback));
     }
 
     /**
@@ -162,11 +181,11 @@ final class ObapremiosAuthorization
      *
      * @throws ConfigurationException
      */
-    public function logout(): void
+    #[NoReturn] public function logout(): void
     {
         // Clear the user's local session with our app,
         // then redirect them to the Auth0 logout endpoint to clear their Auth0 session.
-        $this->sdk->logout($this->route_url_index);
+        $this->redirect($this->sdk->logout($this->route_url_index));
     }
 
     /**
