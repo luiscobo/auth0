@@ -23,9 +23,13 @@ final class ObapremiosAuthorization
 
     private string $cookie_secret = "";
 
-    private string $route_url_callback = "https://obapremios.com";
+    private string $route_url_callback = "https://obapremios.com/callback";
 
-    private string $route_url_index = "https://obapremios.com";
+    private string $route_url_index = "https://obapremios.com/";
+
+    private string $route_url_login;
+
+    private string $route_url_logout;
 
     /**
      * An instance of our SDK's Auth0 configuration, so we could potentially make changes later.
@@ -35,13 +39,12 @@ final class ObapremiosAuthorization
     /**
      * An instance of the Auth0 SDK.
      */
-    private Auth0 $sdk;
+    public Auth0 $sdk;
 
     /**
      * Configure the application
      *
      * @param array|null $env
-     * @throws ConfigurationException
      */
     public function __construct(array $env = null)
     {
@@ -60,14 +63,8 @@ final class ObapremiosAuthorization
             ];
         }
 
-        // Build the SdkConfiguration
-        $this->configuration = new SdkConfiguration($config);
-
-        // Add 'offline_access' to scopes to ensure we get a renew token.
-        $this->configuration->pushScope('offline_access');
-
         // Setup the Auth0 SDK.
-        $this->sdk = new Auth0($this->configuration);
+        $this->sdk = new Auth0($config);
     }
 
     /**
@@ -104,14 +101,24 @@ final class ObapremiosAuthorization
         $this->route_url_index = $route_url_index;
     }
 
+    public function setRouteUrlLogin(string $uri): void
+    {
+        $this->route_url_login = $uri;
+    }
+
+    public function setRouteUrlLogout(string $uri): void
+    {
+        $this->route_url_logout = $uri;
+    }
+
     /**
      * Process the current request and route it to the class handler.
      *
      * @param string $uri The new uri to redirect the end user to.
      */
-    #[NoReturn] private function redirect(string $uri): void
+    private function redirect(string $uri): void
     {
-        header('Location: ' . $uri, true, 303);
+        header('Location: ' . $uri);
         exit;
     }
 
@@ -166,13 +173,14 @@ final class ObapremiosAuthorization
      * @return void
      * @throws ConfigurationException
      */
-    #[NoReturn] public function login(): void
+    public function login(): void
     {
         // Clear the local session.
         $this->sdk->clear();
 
         // Redirect to Auth0's Universal Login page.
         $this->redirect($this->sdk->login($this->route_url_callback));
+        exit;
     }
 
     /**
@@ -181,11 +189,12 @@ final class ObapremiosAuthorization
      *
      * @throws ConfigurationException
      */
-    #[NoReturn] public function logout(): void
+    public function logout(): void
     {
         // Clear the user's local session with our app,
         // then redirect them to the Auth0 logout endpoint to clear their Auth0 session.
         $this->redirect($this->sdk->logout($this->route_url_index));
+        exit;
     }
 
     /**
@@ -194,13 +203,14 @@ final class ObapremiosAuthorization
      * @throws NetworkException
      * @throws StateException
      */
-    #[NoReturn] public function completeAuthenticationFlow(): void
+    public function completeAuthenticationFlow(): void
     {
         // Inform Auth0 we want to redirect to our /callback route, so we can perform the code exchange and setup the user session there.
         $this->sdk->exchange($this->route_url_callback);
 
         // Redirect to your application's index route.
         $this->redirect($this->route_url_index);
+        exit;
     }
 
     /**
@@ -210,12 +220,19 @@ final class ObapremiosAuthorization
      */
     public function getUserInfo(string $field): string|null
     {
+        $user = $this->getUser();
+
+        return $user[$field];
+    }
+
+    public function getUser()
+    {
         $session = $this->sdk->getCredentials();
         if ($session === null) {
             return null;
         }
 
-        return $session->user[$field];
+        return $session->user;
     }
 
     /**
@@ -241,12 +258,12 @@ final class ObapremiosAuthorization
 
     public function getUserName(): string|null
     {
-        return $this->getUserInfo("username");
+        return $this->getUserInfo("nickname");
     }
 
     public function getUserId(): string|null
     {
-        return $this->getUserInfo("user_id");
+        return $this->getUserInfo("sub");
     }
 
     /**
