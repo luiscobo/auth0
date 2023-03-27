@@ -38,8 +38,5 @@ $auth = new ObapremiosAuthorization(config);
    ```
    
 5. Get user information: it is possible get additional information about the logged user with the methods
-   * `getUserInfo($attribute)`
-   * `getUserFamilyName()`
-   * `getUserFirstName()`
    * `getUserName()`
    * `getUserId()`
