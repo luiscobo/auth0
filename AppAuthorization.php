@@ -239,12 +239,12 @@ final class ObapremiosAuthorization
 
     public function getUserName(): string|null
     {
-        return $this->getUserInfo("nickname");
+        return $this->getUserInfo("username");
     }
 
     public function getUserId(): string|null
     {
-        return $this->getUserInfo("sub");
+        return $this->getUserInfo("user_id");
     }
 
     /**
