@@ -7,7 +7,6 @@ use Auth0\SDK\Configuration\SdkConfiguration;
 use Auth0\SDK\Exception\ConfigurationException;
 use Auth0\SDK\Exception\NetworkException;
 use Auth0\SDK\Exception\StateException;
-use JetBrains\PhpStorm\NoReturn;
 
 final class ObapremiosAuthorization
 {
@@ -39,7 +38,7 @@ final class ObapremiosAuthorization
     /**
      * An instance of the Auth0 SDK.
      */
-    public Auth0 $sdk;
+    private Auth0 $sdk;
 
     /**
      * Configure the application
@@ -225,35 +224,17 @@ final class ObapremiosAuthorization
         return $user[$field];
     }
 
-    public function getUser()
+    public function getUser(): ?array
     {
         $session = $this->sdk->getCredentials();
         if ($session === null) {
             return null;
         }
 
-        return $session->user;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getUserFamilyName(): string|null
-    {
-        return $this->getUserInfo("family_name");
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getUserFirstName(): string | null
-    {
-        return $this->getUserInfo("given_name");
-    }
-
-    public function getUserEmail(): string|null
-    {
-        return $this->getUserInfo("email");
+        return array(
+            "user_id" => $session->user["sub"],
+            "username" => $session->user["nickname"]
+        );
     }
 
     public function getUserName(): string|null
